@@ -1,9 +1,7 @@
 import React from "react";
-import { Form, Input, Button, Radio, FormInstance } from 'antd';
+import { Form, Input, Button, FormInstance } from 'antd';
 import { Modal } from 'antd';
 import { getdata, setdata } from "../function";
-import { Table, Space } from 'antd';
-
 interface Props {
   dataAdd: (newItem: Data[]) => void
   editedStudent: (editedStudent: Data) => void
@@ -37,7 +35,6 @@ export default class AddFrom extends React.Component<Props, States> {
   form = React.createRef<FormInstance>();
   componentDidMount() {
     this.loadData();
-
   }
   async loadData() {
     const newdobj = getdata();
@@ -64,22 +61,64 @@ export default class AddFrom extends React.Component<Props, States> {
 
     })
   };
-  handleOk = async (e: any) => {
-    const data = await this.form.current?.validateFields(e.target.name);
+
+  handleCheck= async ()=>{
+    const newstudents = getdata();
+    const data = await this.form.current?.validateFields();
+    const idneedCheck = data.id
+    if((newstudents.find((item :any)=>item.id==idneedCheck))){
+     alert('id phải là duy nhất không đượC nhập trùng')
+      
+    }
+    else {
+      const data = await this.form.current?.validateFields();
     const newstudents = getdata();
     const newdata = [...newstudents, data];
     this.setState({
       data: newdata
     });
     setdata(newdata)
-    if (this.props.dataAdd) { this.props.dataAdd(newdata); }
+    // if (this.props.dataAdd) { 
+      this.props.dataAdd(newdata);
+    // }
     this.form.current?.resetFields();
     this.setState({
       visible: false,
     });
+    }
+    
+  }
+
+  handleOk = async () => {
+    await this.handleCheck()
+    // const fakedata = await this.form.current?.validateFields()
+    // const key= Math.floor(Math.random()*100)
+    // const fakeStudent={
+    //   key: key,
+    //   name: fakedata.name,
+    //   id: fakedata.id,
+    //   age: fakedata.age,
+    //   address: fakedata.address,
+    // }
+    // console.log(fakeStudent);
+
+    // const data = await this.form.current?.validateFields();
+    // const newstudents = getdata();
+    // const newdata = [...newstudents, data];
+    // this.setState({
+    //   data: newdata
+    // });
+    // setdata(newdata)
+    // // if (this.props.dataAdd) { 
+    //   this.props.dataAdd(newdata);
+    // // }
+    // this.form.current?.resetFields();
+    // this.setState({
+    //   visible: false,
+    // });
   };
-  handleEdit = async (e: any) => {
-    const data = await this.form.current?.validateFields(e.target.name);
+  handleEdit = async () => {
+    const data = await this.form.current?.validateFields();
     console.log(data);
     this.props.editedStudent(data);
     this.form.current?.resetFields();
@@ -121,7 +160,7 @@ export default class AddFrom extends React.Component<Props, States> {
               </Form.Item>
             </Form>
                   <Button type="primary"
-                    onClick={(e) => this.handleEdit(e)}
+                    onClick={(e) => this.handleEdit()}
                   >Edit</Button>
           </Modal>
         </div>
